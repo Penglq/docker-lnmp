@@ -10,6 +10,7 @@ services:
         volumes:
             - ~/web/conf/nginx/conf.d:/etc/nginx/conf.d
             - ~/web:/web
+        #container_name: nginx-host
         networks:
             - frontend
         depends_on:

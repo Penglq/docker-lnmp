@@ -1,4 +1,4 @@
-FROM php:7.1.10-fpm
+FROM php:7.1-fpm
 
 ENV TZ=Asia/Shanghai
 
@@ -38,9 +38,9 @@ RUN set -xe \
     && apt-get install -y ${runtimeDeps} ${buildDeps} --no-install-recommends \
     && echo "编译安装 php 组件" \
     && docker-php-ext-install iconv mcrypt mysqli pdo pdo_mysql zip soap \
-    && pecl install mongodb \
-    && pecl install redis \
-    && pecl install memcached \
+    && pecl install redis-3.1.2 \
+    && pecl install mongodb-1.3.0 \
+    && pecl install memcached-3.0.3 \
     && docker-php-ext-enable mongodb memcached redis \
     && docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
@@ -61,3 +61,4 @@ RUN set -xe \
     && rm -rf ~/cphalcon
 
 COPY ./php.conf /usr/local/etc/php/conf.d/php.conf
+COPY ./phplog.conf /usr/local/etc/php-fpm.d/phplog.conf
