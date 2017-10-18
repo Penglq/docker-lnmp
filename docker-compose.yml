@@ -2,6 +2,7 @@ version: '2'
 services:
     nginx:
         #image: "${DOCKER_USER}/lnmp-nginx:v1.2"
+        container_name: nginx_dev
         build:
             context: .
             dockerfile: Dockerfile.nginx
@@ -10,18 +11,19 @@ services:
         volumes:
             - ~/web/conf/nginx/conf.d:/etc/nginx/conf.d
             - ~/web:/web
-        #container_name: nginx-host
         networks:
             - frontend
         depends_on:
             - php
     php:
         #image: "${DOCKER_USER}/lnmp-php:v1.2"
+        container_name: php_dev
         build:
             context: .
             dockerfile: Dockerfile.php
         volumes:
             - ~/web:/web
+            - ~/web/logs/php:/opt/yrd_logs/php/l5
         networks:
             - frontend
             - backend

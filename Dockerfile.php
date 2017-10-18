@@ -38,6 +38,8 @@ RUN set -xe \
     && apt-get install -y ${runtimeDeps} ${buildDeps} --no-install-recommends \
     && echo "编译安装 php 组件" \
     && docker-php-ext-install iconv mcrypt mysqli pdo pdo_mysql zip soap \
+    && pecl install amqp-1.9.1 \
+    && pecl install stomp-2.0.1 \
     && pecl install redis-3.1.2 \
     && pecl install mongodb-1.3.0 \
     && pecl install memcached-3.0.3 \
