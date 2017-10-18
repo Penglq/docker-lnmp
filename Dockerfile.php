@@ -43,7 +43,8 @@ RUN set -xe \
     && pecl install redis-3.1.2 \
     && pecl install mongodb-1.3.0 \
     && pecl install memcached-3.0.3 \
-    && docker-php-ext-enable mongodb memcached redis \
+    && pecl install xdebug-2.5.0 \
+    && docker-php-ext-enable amqp stomp redis mongodb memcached xdebug \
     && docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
@@ -62,5 +63,6 @@ RUN set -xe \
     && cd / \
     && rm -rf ~/cphalcon
 
-COPY ./php.conf /usr/local/etc/php/conf.d/php.conf
-COPY ./phplog.conf /usr/local/etc/php-fpm.d/phplog.conf
+COPY ./php.ini /usr/local/etc/php/
+COPY ./php.conf /usr/local/etc/php/conf.d
+COPY ./phplog.conf /usr/local/etc/php-fpm.d
