@@ -12,3 +12,6 @@
 
 
 
+## 启动方法
+
+docker-compose up -d
