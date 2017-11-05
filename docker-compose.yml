@@ -4,7 +4,7 @@ services:
         #image: "${DOCKER_USER}/lnmp-nginx:v1.2"
         container_name: nginx_dev
         build:
-            context: .
+            context: ./nginx
             dockerfile: Dockerfile.nginx
         ports:
             - "80:80"
@@ -13,13 +13,15 @@ services:
             - ~/web:/web
         networks:
             - frontend
+        links:
+            - php
         depends_on:
             - php
     php:
         #image: "${DOCKER_USER}/lnmp-php:v1.2"
         container_name: php_dev
         build:
-            context: .
+            context: ./php
             dockerfile: Dockerfile.php
         volumes:
             - ~/web:/web

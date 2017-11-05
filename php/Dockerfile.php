@@ -12,6 +12,8 @@ RUN set -xe \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libmcrypt-dev \
+        gcc \
+        make \
     " \
     && echo "运行依赖" \
     && runtimeDeps=" \
@@ -24,8 +26,8 @@ RUN set -xe \
         libmemcached-dev \
         libpq-dev \
         zlib1g-dev \
-        gcc \
-        make \
+        curl \
+        libcurl4-gnutls-dev \
         libssl-dev \
         pkg-config \
         librabbitmq-dev \
@@ -45,7 +47,8 @@ RUN set -xe \
     && pecl install mongodb-1.3.0 \
     && pecl install memcached-3.0.3 \
     && pecl install xdebug-2.5.0 \
-    && docker-php-ext-enable redis mongodb memcached xdebug \
+    && pecl install solr \
+    && docker-php-ext-enable redis mongodb memcached xdebug solr \
     && docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
@@ -77,4 +80,4 @@ RUN set -xe \
 
 COPY ./php.ini /usr/local/etc/php/
 COPY ./php.conf /usr/local/etc/php/conf.d
-COPY ./phplog.conf /usr/local/etc/php-fpm.d
+COPY ./www.conf /usr/local/etc/php-fpm.d
