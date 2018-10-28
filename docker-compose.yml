@@ -8,6 +8,7 @@ services:
             dockerfile: Dockerfile.nginx
         ports:
             - "80:80"
+            - "10040:10040"
         volumes:
             - ~/web/conf/nginx/conf.d:/etc/nginx/conf.d
             - ~/web:/web
@@ -25,7 +26,7 @@ services:
             dockerfile: Dockerfile.php
         volumes:
             - ~/web:/web
-            - ~/web/logs/php:/opt/yrd_logs/php/l5
+            - ~/web/logs/php:/opt/yrd_logs/php/mock
         networks:
             - frontend
             - backend
@@ -47,15 +48,29 @@ services:
         command: ['mysqld', '--character-set-server=utf8']
         networks:
             - backend
+    #redis:
+    #    image: 'bitnami/redis:latest'
+    #    ports:
+    #        - '6379:6379'
+    #    environment:
+    #        - REDIS_PASSWORD=password123
+    #        #- ALLOW_EMPTY_PASSWORD=yes
+    #        - REDIS_MASTER_HOST=redis-master
+    #    volumes:
+    #        - ~/web/redis:/data
+    #    networks:
+    #        - backend
     redis:
         container_name: redis_dev
-        image: redis:3.2
+        build:
+           context: ./redis
+           dockerfile: Dockerfile.redis
         ports:
-            - "6379:6379"
+           - "6379:6379"
         volumes:
-            - ~/web/redis:/data
+           - ~/web/redis:/data
         networks:
-            - backend
+           - backend
 volumes:
     mysql-data:
 

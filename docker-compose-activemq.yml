@@ -1,0 +1,17 @@
+version: '2'
+services:
+    rabbitmq:
+        container_name: activemq
+        image: webcenter/activemq
+        environment:
+            ACTIVEMQ_NAME: amq
+            ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT: True
+            ACTIVEMQ_ADMIN_LOGIN: admin
+            ACTIVEMQ_ADMIN_PASSWORD: admin
+        ports:
+           - "8161:8161"
+           - "61616:61616"
+           - "61613:61613"
+        volumes:
+          - ~/web/activemq:/data
+          #- ~/web/log/activemq:/var/log/activemq

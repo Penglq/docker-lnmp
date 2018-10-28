@@ -44,11 +44,11 @@ RUN set -xe \
     && echo "编译安装 php 组件" \
     && docker-php-ext-install iconv mcrypt mysqli pdo pdo_mysql zip soap \
     && pecl install redis-3.1.2 \
-    && pecl install mongodb-1.3.0 \
+    #&& pecl install mongodb-1.3.0 \
     && pecl install memcached-3.0.3 \
     && pecl install xdebug-2.5.0 \
     && pecl install solr \
-    && docker-php-ext-enable redis mongodb memcached xdebug solr \
+    && docker-php-ext-enable redis memcached xdebug solr \
     && docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
