@@ -3,7 +3,13 @@ FROM php:7.0-fpm-jessie
 ENV TZ=Asia/Shanghai
 
 COPY sources.list /etc/apt/sources.list
-
+COPY ./redis-3.1.5.tgz /tmp/
+COPY ./amqp-1.9.3.tgz /tmp/
+COPY ./memcached-3.0.3.tgz /tmp/
+COPY ./mongodb-1.3.0.tgz /tmp/
+COPY ./stomp-2.0.1.tgz /tmp/
+COPY ./xdebug-2.6.1.tgz /tmp/
+COPY ./solr-2.4.0.tgz /tmp/
 RUN set -xe \
     && echo "构建依赖" \
     && buildDeps=" \
@@ -14,6 +20,8 @@ RUN set -xe \
         libmcrypt-dev \
         gcc \
         make \
+        pkg-config \
+        libssl-dev \
     " \
     && echo "运行依赖" \
     && runtimeDeps=" \
@@ -43,31 +51,32 @@ RUN set -xe \
     && apt-get install -y ${runtimeDeps} ${buildDeps} --no-install-recommends \
     && echo "编译安装 php 组件" \
     && docker-php-ext-install iconv mcrypt mysqli pdo pdo_mysql zip soap \
-    && pecl install redis-3.1.2 \
-    #&& pecl install mongodb-1.3.0 \
-    && pecl install memcached-3.0.3 \
-    && pecl install xdebug-2.5.0 \
-    && pecl install solr \
-    && docker-php-ext-enable redis memcached xdebug solr \
+    && cd /tmp \
+    && ln -s /usr/lib64/libssl.so /usr/lib/libssl.so \
+    && ln -s /usr/lib64/libcrypto.so /usr/lib/libcrypto.so \
+    && pecl install redis-3.1.5.tgz \
+    && pecl install mongodb-1.3.0.tgz \
+    && pecl install memcached-3.0.3.tgz \
+    && pecl install xdebug-2.6.1.tgz \
+    && pecl install solr-2.4.0.tgz \
+    && pecl install amqp-1.9.3.tgz \
+    && tar -xvf stomp-2.0.1.tgz \
+    && cd stomp-2.0.1 \
+    && phpize && ./configure --with-php-config=php-config && make && make install \
+    && docker-php-ext-enable mongodb redis memcached xdebug solr amqp stomp \
     && docker-php-ext-configure gd \
         --with-freetype-dir=/usr/include/ \
         --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
+    # cphalcon
     && git clone -b 3.2.x --depth=1 https://github.com/phalcon/cphalcon.git ~/cphalcon \
     && cd ~/cphalcon/build \
     && ./install \
     && docker-php-ext-enable phalcon \
-    # amqp
-    && cd ~ && wget https://pecl.php.net/get/amqp-1.9.3.tgz && tar -xvf amqp-1.9.3.tgz \
-    && cd amqp-1.9.3 \
-    && phpize && ./configure --with-php-config=php-config && make && make install \
-    && docker-php-ext-enable amqp && cd - && rm -rf amqp-1.9.3.tgz amqp-1.9.3 \
-    # stomp
-    && cd ~ && wget https://pecl.php.net/get/stomp-2.0.1.tgz && tar -xvf stomp-2.0.1.tgz \
-    && cd stomp-2.0.1 \
-    && phpize && ./configure --with-php-config=php-config && make && make install \
-    && docker-php-ext-enable stomp && cd - && rm -rf stomp-2.0.1.tgz stomp-2.0.1 \
+
     && echo "清理" \
+    && rm -rf redis-3.1.5.tgz \ && rm -rf amqp-1.9.3.tgz \ && rm -rf memcached-3.0.3.tgz \ && rm -rf mongodb-1.3.0.tgz \
+    && rm -rf stomp-2.0.1.tgz \ && rm -rf xdebug-2.6.1.tgz \ && rm -rf solr-2.4.0.tgz \ && rm -rf stomp-2.0.1 \
     && apt-get purge -y --auto-remove \
         -o APT::AutoRemove::RecommendsImportant=false \
         -o APT::AutoRemove::SuggestsImportant=false \
