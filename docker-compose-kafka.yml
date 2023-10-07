@@ -1,0 +1,41 @@
+version: '3.5'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper   ## 镜像
+    container_name: zookeeper
+    ports:
+      - "2181:2181"                 ## 对外暴露的端口号
+    restart: always
+
+  kafka:
+    image: wurstmeister/kafka:2.12-2.3.0
+    container_name: "kafka"
+    ports:
+      - "9092:9092"
+    environment:
+      - TZ=CST-8
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      # 非必须，设置自动创建 topic
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_ADVERTISED_HOST_NAME=${IP}
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${IP}:9092
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      # 非必须，设置对内存
+      - KAFKA_HEAP_OPTS=-Xmx1G -Xms1G
+      # 非必须，设置保存7天数据，为默认值
+      - KAFKA_LOG_RETENTION_HOURS=168
+    volumes:
+      # 将 kafka 的数据文件映射出来
+      - ~/web/data/kafka:/kafka
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+  kafka-manager:
+    image: sheepkiller/kafka-manager                ## 镜像：开源的web管理kafka集群的界面
+    container_name: kafka-manager
+    environment:
+        ZK_HOSTS: zookeeper                         ## 修改:宿主机IP
+    ports:  
+      - "9009:9000"                                 ## 暴露端口 9000这个端口冲突太多
+    restart: always
+#https://juejin.cn/post/7091842457318473764

@@ -1,4 +1,4 @@
-version: '2'
+version: '3.6'
 services:
     nginx:
         #image: "${DOCKER_USER}/lnmp-nginx:v1.2"
@@ -14,30 +14,34 @@ services:
             - ~/web:/web
         networks:
             - frontend
-    #     links:
-    #         - php
-    #     depends_on:
-    #         - php
-    # php:
-    #     #image: "${DOCKER_USER}/lnmp-php:v1.2"
-    #     container_name: php_dev
-    #     build:
-    #         context: ./php
-    #         dockerfile: Dockerfile.php
-    #     volumes:
-    #         - ~/web:/web
-    #         - ~/web/logs/php:/opt/yrd_logs/php/mock
-    #     networks:
-    #         - frontend
-    #         - backend
-    #     environment:
-    #         MYSQL_PASSWORD: 123456
-    #     depends_on:
-    #         - mysql
-    #         - redis
+        links:
+            - php
+        depends_on:
+            - php
+    php:
+        #image: "${DOCKER_USER}/lnmp-php:v1.2"
+        container_name: php_dev
+        build:
+            context: ./php
+            dockerfile: Dockerfile.php
+        volumes:
+            - ~/web:/web
+            - ~/web/logs/php:/opt/yrd_logs/php/mock
+        networks:
+            - frontend
+            - backend
+        environment:
+            MYSQL_PASSWORD: 123456
+        links:
+            - mysql
+            - redis
+        depends_on:
+            - mysql
+            - redis
     mysql:
         container_name: mysql_dev
         image: mysql:5.7
+        platform: linux/amd64
         volumes:
             - ~/web/mysql:/var/lib/mysql
             - ~/web/lnmp/mysql/conf/my.cnf:/etc/mysql/my.cnf
